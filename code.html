@@ -2,139 +2,139 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Interactive Code Editor</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/theme/dracula.min.css">
     <style>
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: #1c1c1e;
-            color: #f5f5f7;
+            font-family: -apple-system, BlinkMacSystemFont, "San Francisco", "Helvetica Neue", Helvetica, Arial, sans-serif;
+            background-color: #1e1e2f;
+            color: #dcdcdc;
             margin: 0;
             padding: 0;
             overflow: hidden;
         }
 
         header {
-            background-color: #161616;
-            padding: 15px;
+            background-color: #2a2a3e;
+            padding: 15px 20px;
             text-align: center;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            border-bottom: 1px solid #3a3a4d;
         }
 
         h1 {
-            color: #ffffff;
-            font-size: 24px;
-            margin: 0;
+            font-size: 18px;
             font-weight: 600;
+            margin: 0;
+            color: #f5f5f5;
         }
 
         .container {
             display: flex;
             flex-direction: column;
-            padding: 20px;
+            padding: 10px;
+            gap: 10px;
             height: calc(100vh - 60px);
-            overflow: hidden;
         }
 
         .editor-container {
             display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            margin-bottom: 15px;
+            flex-direction: column;
+            gap: 10px;
+            flex-grow: 1;
         }
 
         .editor {
-            flex: 1;
-            min-width: 300px;
-            background-color: #242424;
-            border-radius: 8px;
+            flex-grow: 1;
+            background-color: #2a2a3e;
+            border-radius: 12px;
             padding: 10px;
-            height: 220px;
-            box-sizing: border-box;
-            display: flex;
-            flex-direction: column;
-            border: 1px solid #333;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
         }
 
         .editor h3 {
-            color: #f5f5f7;
-            font-size: 16px;
-            margin: 0 0 10px 0;
-            font-weight: 500;
+            margin: 0 0 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #d1d1e0;
         }
 
-        .input-area {
-            flex: 1;
-            color: #ffffff;
-            background-color: #2a2a2a;
-            border: none;
-            border-radius: 5px;
-            padding: 10px;
+        .CodeMirror {
+            height: 150px;
             font-size: 14px;
-            font-family: 'Source Code Pro', monospace;
-            resize: none;
-            box-sizing: border-box;
-            outline: none;
-            overflow-y: auto;
+            border-radius: 8px;
+        }
+
+        .fullscreen-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #44475a;
+            color: #fff;
+            font-size: 14px;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .fullscreen-btn:hover {
+            background-color: #6272a4;
         }
 
         .buttons {
             display: flex;
-            justify-content: center;
-            gap: 12px;
-            flex-wrap: wrap;
+            justify-content: space-around;
+            gap: 10px;
         }
 
         button {
-            padding: 10px 25px;
-            border: none;
-            border-radius: 8px;
+            flex: 1;
+            padding: 12px 15px;
             font-size: 14px;
-            font-weight: 600;
+            font-weight: 500;
+            text-align: center;
+            border-radius: 12px;
+            border: none;
             cursor: pointer;
-            transition: background-color 0.2s, transform 0.2s, box-shadow 0.2s;
-            color: #ffffff;
+            transition: background-color 0.3s, transform 0.2s;
         }
 
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        button:active {
+            transform: scale(0.98);
         }
 
         .copy-btn {
-            background-color: #9b59b6;
+            background-color: #44475a;
+            color: #fff;
         }
 
         .paste-btn {
-            background-color: #3498db;
+            background-color: #6272a4;
+            color: #fff;
         }
 
         .download-btn {
-            background-color: #2ecc71;
+            background-color: #50fa7b;
+            color: #fff;
         }
 
         .run-btn {
-            background-color: #e67e22;
+            background-color: #ffb86c;
+            color: #fff;
         }
 
         .output-container {
+            flex-grow: 2;
+            background-color: #2a2a3e;
+            border-radius: 12px;
             position: relative;
-            flex-grow: 1;
-            margin-top: 10px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            border-radius: 8px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
             overflow: hidden;
-        }
-
-        .output {
-            background-color: #2a2a2a;
-            width: 100%;
-            height: 100%;
-            border-radius: 8px;
-            border: 1px solid #333;
         }
 
         iframe {
@@ -142,69 +142,73 @@
             height: 100%;
             border: none;
         }
-
-        .fullscreen-btn {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            padding: 8px 12px;
-            background-color: #4caf50;
-            color: #ffffff;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 12px;
-            font-weight: 600;
-            transition: background-color 0.3s;
-        }
-
-        .fullscreen-btn:hover {
-            background-color: #45a045;
-        }
     </style>
 </head>
 <body>
     <header>
-        <h1>Interactive Code Editor</h1>
+        <h1>Code Editor</h1>
     </header>
     <div class="container">
         <div class="editor-container">
             <div class="editor">
                 <h3>HTML</h3>
-                <textarea id="html-code" class="input-area" placeholder="Write your HTML code here..."></textarea>
+                <textarea id="html-code"></textarea>
+                <button class="fullscreen-btn" onclick="toggleFullScreen('html-code')">⛶</button>
             </div>
             <div class="editor">
                 <h3>CSS</h3>
-                <textarea id="css-code" class="input-area" placeholder="Write your CSS code here..."></textarea>
+                <textarea id="css-code"></textarea>
+                <button class="fullscreen-btn" onclick="toggleFullScreen('css-code')">⛶</button>
             </div>
             <div class="editor">
                 <h3>JavaScript</h3>
-                <textarea id="js-code" class="input-area" placeholder="Write your JavaScript code here..."></textarea>
+                <textarea id="js-code"></textarea>
+                <button class="fullscreen-btn" onclick="toggleFullScreen('js-code')">⛶</button>
             </div>
         </div>
-
         <div class="buttons">
             <button class="copy-btn" onclick="copyCode()">Copy</button>
             <button class="paste-btn" onclick="pasteCode()">Paste</button>
             <button class="download-btn" onclick="downloadCode()">Download</button>
             <button class="run-btn" onclick="runCode()">Run</button>
         </div>
-
         <div class="output-container">
-            <div class="output" id="output-area">
-                <iframe id="output-frame"></iframe>
-                <button class="fullscreen-btn" onclick="toggleFullScreen()">Full Screen</button>
-            </div>
+            <iframe id="output-frame"></iframe>
         </div>
     </div>
 
+    <!-- Include CodeMirror -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/mode/htmlmixed/htmlmixed.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/mode/css/css.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/mode/javascript/javascript.min.js"></script>
     <script>
+        // Initialize CodeMirror Editors
+        const htmlEditor = CodeMirror.fromTextArea(document.getElementById('html-code'), {
+            mode: 'htmlmixed',
+            theme: 'dracula',
+            lineNumbers: false,
+        });
+
+        const cssEditor = CodeMirror.fromTextArea(document.getElementById('css-code'), {
+            mode: 'css',
+            theme: 'dracula',
+            lineNumbers: false,
+        });
+
+        const jsEditor = CodeMirror.fromTextArea(document.getElementById('js-code'), {
+            mode: 'javascript',
+            theme: 'dracula',
+            lineNumbers: false,
+        });
+
+        // Run Code Function
         function runCode() {
-            const htmlCode = document.getElementById("html-code").value;
-            const cssCode = `<style>${document.getElementById("css-code").value}</style>`;
-            const jsCode = `<script>${document.getElementById("js-code").value}<\/script>`;
-            
-            const iframe = document.getElementById("output-frame");
+            const htmlCode = htmlEditor.getValue();
+            const cssCode = `<style>${cssEditor.getValue()}</style>`;
+            const jsCode = `<script>${jsEditor.getValue()}<\/script>`;
+
+            const iframe = document.getElementById('output-frame');
             const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
 
             iframeDoc.open();
@@ -212,73 +216,19 @@
             iframeDoc.close();
         }
 
-        function copyCode() {
-            const htmlCode = document.getElementById("html-code").value;
-            const cssCode = document.getElementById("css-code").value;
-            const jsCode = document.getElementById("js-code").value;
+        // Toggle Fullscreen Editor
+        function toggleFullScreen(editorId) {
+            const editorContainer = document.querySelector(`#${editorId}`).closest('.editor');
+            const isFullscreen = editorContainer.classList.contains('fullscreen');
 
-            const fullCode = `HTML:\n${htmlCode}\n\nCSS:\n${cssCode}\n\nJavaScript:\n${jsCode}`;
-            navigator.clipboard.writeText(fullCode).then(() => {
-                alert("Code copied to clipboard!");
+            document.querySelectorAll('.editor').forEach((editor) => {
+                editor.classList.remove('fullscreen');
+                editor.style.height = '';
             });
-        }
 
-        function pasteCode() {
-            navigator.clipboard.readText().then(text => {
-                const parts = text.split("\n\n");
-                if (parts.length > 0) {
-                    document.getElementById("html-code").value = parts[0].replace("HTML:", "").trim();
-                }
-                if (parts.length > 1) {
-                    document.getElementById("css-code").value = parts[1].replace("CSS:", "").trim();
-                }
-                if (parts.length > 2) {
-                    document.getElementById("js-code").value = parts[2].replace("JavaScript:", "").trim();
-                }
-            });
-        }
-
-        function downloadCode() {
-            const htmlCode = document.getElementById("html-code").value;
-            const cssCode = document.getElementById("css-code").value;
-            const jsCode = document.getElementById("js-code").value;
-
-            const code = `
-HTML Code:
-${htmlCode}
-
-CSS Code:
-${cssCode}
-
-JavaScript Code:
-${jsCode}
-            `;
-
-            const blob = new Blob([code], { type: 'text/plain' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = 'code.txt';
-            link.click();
-        }
-
-        function toggleFullScreen() {
-            const outputArea = document.getElementById('output-area');
-            const iframe = document.getElementById('output-frame');
-            const isFullScreen = outputArea.style.position === 'fixed';
-
-            if (isFullScreen) {
-                outputArea.style.position = 'relative';
-                outputArea.style.height = '100%';
-                iframe.style.height = '100%';
-                document.body.style.overflow = 'hidden';
-            } else {
-                outputArea.style.position = 'fixed';
-                outputArea.style.top = '0';
-                outputArea.style.left = '0';
-                outputArea.style.width = '100%';
-                outputArea.style.height = '100vh';
-                iframe.style.height = '100vh';
-                document.body.style.overflow = 'hidden';
+            if (!isFullscreen) {
+                editorContainer.classList.add('fullscreen');
+                editorContainer.style.height = '90vh';
             }
         }
     </script>
