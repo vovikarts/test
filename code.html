@@ -86,6 +86,18 @@
             background-color: #6272a4;
         }
 
+        .fullscreen {
+            position: fixed !important;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #1e1e2f;
+            z-index: 9999;
+            border-radius: 0;
+            padding: 20px;
+        }
+
         .buttons {
             display: flex;
             justify-content: space-around;
@@ -187,19 +199,19 @@
         const htmlEditor = CodeMirror.fromTextArea(document.getElementById('html-code'), {
             mode: 'htmlmixed',
             theme: 'dracula',
-            lineNumbers: false,
+            lineNumbers: true,
         });
 
         const cssEditor = CodeMirror.fromTextArea(document.getElementById('css-code'), {
             mode: 'css',
             theme: 'dracula',
-            lineNumbers: false,
+            lineNumbers: true,
         });
 
         const jsEditor = CodeMirror.fromTextArea(document.getElementById('js-code'), {
             mode: 'javascript',
             theme: 'dracula',
-            lineNumbers: false,
+            lineNumbers: true,
         });
 
         // Run Code Function
@@ -221,15 +233,17 @@
             const editorContainer = document.querySelector(`#${editorId}`).closest('.editor');
             const isFullscreen = editorContainer.classList.contains('fullscreen');
 
-            document.querySelectorAll('.editor').forEach((editor) => {
-                editor.classList.remove('fullscreen');
-                editor.style.height = '';
-            });
-
-            if (!isFullscreen) {
+            if (isFullscreen) {
+                editorContainer.classList.remove('fullscreen');
+            } else {
                 editorContainer.classList.add('fullscreen');
-                editorContainer.style.height = '90vh';
             }
+
+            setTimeout(() => {
+                if (editorId === 'html-code') htmlEditor.refresh();
+                if (editorId === 'css-code') cssEditor.refresh();
+                if (editorId === 'js-code') jsEditor.refresh();
+            }, 300); // Ensures CodeMirror refreshes layout
         }
     </script>
 </body>
